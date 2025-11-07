@@ -1,0 +1,19 @@
+# 用于后续在Gitlab中发布exe文件的操作
+
+# 创建Release示例
+curl --header "Content-Type: application/json" \
+     --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+     --data '{"name": "Focus30", "tag_name": "v1.0.0", "ref": "master", "description": "Focus30首次版本发布"}' \
+     --request POST "http://10.0.2.250/api/v4/projects/311/releases"
+
+# 删除Release示例
+curl --request DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0"
+
+# 添加Asset链接示例
+curl --request POST --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
+  --data "name=Focus30.exe" \
+  --data "url=https://yearling-aquamarine-wkzo77heh4.edgeone.app/Focus30.exe" \
+  "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0/assets/links"
+
+# 删除Asset链接示例
+curl --request DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0/assets/links/1"
