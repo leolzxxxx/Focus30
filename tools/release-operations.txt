@@ -1,19 +1,19 @@
-# ÓÃÓÚºóĞøÔÚGitlabÖĞ·¢²¼exeÎÄ¼şµÄ²Ù×÷
+# ç”¨äºåç»­åœ¨Gitlabä¸­å‘å¸ƒexeæ–‡ä»¶çš„æ“ä½œ
 
-# ´´½¨ReleaseÊ¾Àı
+# åˆ›å»ºReleaseç¤ºä¾‹
 curl --header "Content-Type: application/json" \
      --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
-     --data '{"name": "Focus30", "tag_name": "v1.0.0", "ref": "master", "description": "Focus30Ê×´Î°æ±¾·¢²¼"}' \
+     --data '{"name": "Focus30", "tag_name": "v1.0.0", "ref": "master", "description": "Focus30é¦–æ¬¡ç‰ˆæœ¬å‘å¸ƒ"}' \
      --request POST "http://10.0.2.250/api/v4/projects/311/releases"
 
-# É¾³ıReleaseÊ¾Àı
+# åˆ é™¤Releaseç¤ºä¾‹
 curl --request DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0"
 
-# Ìí¼ÓAssetÁ´½ÓÊ¾Àı
+# æ·»åŠ Asseté“¾æ¥ç¤ºä¾‹
 curl --request POST --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" \
   --data "name=Focus30.exe" \
   --data "url=https://yearling-aquamarine-wkzo77heh4.edgeone.app/Focus30.exe" \
   "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0/assets/links"
 
-# É¾³ıAssetÁ´½ÓÊ¾Àı
+# åˆ é™¤Asseté“¾æ¥ç¤ºä¾‹
 curl --request DELETE --header "PRIVATE-TOKEN: ${GITLAB_TOKEN}" "http://10.0.2.250/api/v4/projects/311/releases/v1.0.0/assets/links/1"
