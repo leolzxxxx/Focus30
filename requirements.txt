@@ -1,2 +1,2 @@
-java=21
+java=1.8
 javafx=21.0.9

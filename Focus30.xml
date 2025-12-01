@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\27131\Desktop\ReverseTime\out\artifacts\Focus30_jar\Focus30.jar</jar>
-  <outfile>C:\Users\27131\Desktop\ReverseTime\out\exe\Focus30.exe</outfile>
+  <jar>E:\Focus30\out\artifacts\Focus30_jar\Focus30.jar</jar>
+  <outfile>E:\Focus30\out\Focus30.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -13,10 +13,10 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\Users\27131\Desktop\ReverseTime\imag\11.ico</icon>
+  <icon>E:\Focus30\imag\11.ico</icon>
   <jre>
-    <path>%JAVA_HOME%;%PATH%</path>
-    <requiresJdk>false</requiresJdk>
+    <path>D:\jdk-21</path>
+    <requiresJdk>true</requiresJdk>
     <requires64Bit>false</requires64Bit>
     <minVersion></minVersion>
     <maxVersion></maxVersion>
@@ -25,7 +25,7 @@
   <versionInfo>
     <fileVersion>1.0.0.1</fileVersion>
     <txtFileVersion>1.0.0.1</txtFileVersion>
-    <fileDescription>30分钟时间感知</fileDescription>
+    <fileDescription>30分钟时间感知器</fileDescription>
     <copyright>leolz</copyright>
     <productVersion>1.0.0.1</productVersion>
     <txtProductVersion>1.0.0.1</txtProductVersion>
