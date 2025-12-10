@@ -142,6 +142,16 @@ public class Main extends Application {
 
         // 初始显示
         updateTimeLabel();
+
+        // 定时每 1 分钟重新置顶
+        Timeline alwaysOnTopTimeline = new Timeline(
+                new KeyFrame(Duration.minutes(1), e -> {
+                    floatStage.setAlwaysOnTop(false);  // 先取消
+                    floatStage.setAlwaysOnTop(true);   // 再恢复，达到重新置顶效果
+                })
+        );
+        alwaysOnTopTimeline.setCycleCount(Animation.INDEFINITE);
+        alwaysOnTopTimeline.play();
     }
 
     /**

@@ -1,7 +1,7 @@
 # ⌛ Focus30
 
 Focus30 是一个使用 **JavaFX** 编写的专注倒计时应用。  
-本项目通过 `Launch4j` 打包为 Windows 可执行文件，支持一键运行。
+本项目通过 Launch4j 打包为 Windows 可执行文件，支持一键运行。
 
 ![Focus30界面预览](imag/demo.png)
 
@@ -33,4 +33,5 @@ Focus30/
 2. 在配置中加载项目根目录下的 `focus30.xml` 文件。
 3. 点击 **Build Wrapper** 按钮生成 `Focus30.exe` 可执行文件。
 4. 生成完成后，双击运行 `Focus30.exe` 将显示一个悬浮的 **Focus30**。
+5. 如需开机自启动，`Win+R` 后输入 `shell:startup`，把 `Focus30.exe` 复制快捷方式放入该目录下即可。
 
