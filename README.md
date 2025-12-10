@@ -17,8 +17,8 @@ Focus30 是一个使用 **JavaFX** 编写的专注倒计时应用。
 ```
 Focus30/
 ├─ imag/ # 存放图标和图片资源
-├─ out/ # 编译输出目录，class、jar、exe文件
 ├─ src/ # Java 源代码目录
+├─ tools # 项目中的辅助工具
 ├─ .gitignore # Git 忽略文件配置
 ├─ Focus30.xml # Launch4j 配置文件
 ├─ README.md # 项目说明文件
