@@ -56,7 +56,7 @@ public class Main extends Application {
         floatStage.setOpacity(0.8); // 设置透明度（0.0~1.0，0.7表示半透明）
 
         // 在 start 方法中正确设置窗口图标
-        floatStage.getIcons().add(new javafx.scene.image.Image("file:imag/11.png"));
+        floatStage.getIcons().add(new javafx.scene.image.Image("file:imag/kouTu.png"));
 
 
         // 2. 创建用于显示倒计时的标签
