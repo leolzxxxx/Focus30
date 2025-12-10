@@ -1,3 +1,5 @@
+import com.sun.jna.WString;
+import com.sun.jna.platform.win32.Shell32;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -5,6 +7,7 @@ import javafx.animation.Transition;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -50,13 +53,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         // 1. 创建浮动窗口，无边框且置顶
-        Stage floatStage = new Stage();
-        floatStage.initStyle(StageStyle.TRANSPARENT); // 设置为透明
-        floatStage.setAlwaysOnTop(true); // 设置置顶
-        floatStage.setOpacity(0.8); // 设置透明度（0.0~1.0，0.7表示半透明）
+        primaryStage.initStyle(StageStyle.TRANSPARENT); // 设置为透明
+        primaryStage.setAlwaysOnTop(true); // 设置置顶
+        primaryStage.setOpacity(0.8); // 设置透明度（0.0~1.0，0.7表示半透明）
 
         // 在 start 方法中正确设置窗口图标
-        floatStage.getIcons().add(new javafx.scene.image.Image("file:imag/kouTu.png"));
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/imag/kouTu.png")));
 
 
         // 2. 创建用于显示倒计时的标签
@@ -119,7 +121,7 @@ public class Main extends Application {
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
         scene.getStylesheets().clear(); // 清除默认样式
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT); // 设置场景背景透明
-        floatStage.setScene(scene);
+        primaryStage.setScene(scene);
 
         // 3. 实现拖拽功能，通过鼠标事件实现
         double[] offset = new double[2];
@@ -129,16 +131,16 @@ public class Main extends Application {
             dragDistance = 0;
         });
         scene.setOnMouseDragged(e -> {
-            floatStage.setX(e.getScreenX() - offset[0]);
-            floatStage.setY(e.getScreenY() - offset[1]);
+            primaryStage.setX(e.getScreenX() - offset[0]);
+            primaryStage.setY(e.getScreenY() - offset[1]);
             // 累计拖拽距离
             dragDistance += Math.abs(e.getSceneX() - offset[0]) + Math.abs(e.getSceneY() - offset[1]);
         });
 
         // 4. 初始位置：屏幕右上角
-        floatStage.setX(1190);
-        floatStage.setY(42);
-        floatStage.show();
+        primaryStage.setX(1190);
+        primaryStage.setY(42);
+        primaryStage.show();
 
         // 初始显示
         updateTimeLabel();
@@ -146,8 +148,8 @@ public class Main extends Application {
         // 定时每 1 分钟重新置顶
         Timeline alwaysOnTopTimeline = new Timeline(
                 new KeyFrame(Duration.minutes(1), e -> {
-                    floatStage.setAlwaysOnTop(false);  // 先取消
-                    floatStage.setAlwaysOnTop(true);   // 再恢复，达到重新置顶效果
+                    primaryStage.setAlwaysOnTop(false);  // 先取消
+                    primaryStage.setAlwaysOnTop(true);   // 再恢复，达到重新置顶效果
                 })
         );
         alwaysOnTopTimeline.setCycleCount(Animation.INDEFINITE);
@@ -355,11 +357,10 @@ public class Main extends Application {
         transition.play();
     }
 
-    /**
-     * 主方法
-     * @param args 命令行参数
-     */
-    public static void main(String[] args) {
-        launch(args);
+
+
+    @Override
+    public void init() throws Exception {
+        super.init();
     }
 }

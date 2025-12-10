@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>E:\Focus30\out\artifacts\Focus30_jar\Focus30.jar</jar>
+  <outfile>E:\Focus30\out\Focus30.exe</outfile>
+  <classPath>
+    <mainClass>MainLauncher</mainClass>
+  </classPath>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>E:\Focus30\imag\kouTu.ico</icon>
+  <jre>
+    <path>D:\jdk-21</path>
+    <requiresJdk>true</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+    <opt>--module-path &quot;D:\javafx-sdk-21.0.9\lib&quot; --add-modules javafx.controls,javafx.fxml</opt>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.1</fileVersion>
+    <txtFileVersion>1.0.0.1</txtFileVersion>
+    <fileDescription>30-Minute Time Awareness</fileDescription>
+    <copyright>leolz</copyright>
+    <productVersion>1.0.0.1</productVersion>
+    <txtProductVersion>1.0.0.1</txtProductVersion>
+    <productName>Focus30</productName>
+    <companyName></companyName>
+    <internalName>Focus30</internalName>
+    <originalFilename>Focus30.exe</originalFilename>
+    <trademarks></trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+</launch4jConfig>
