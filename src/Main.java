@@ -23,28 +23,32 @@ import java.util.List;
  * 实现一个可拖拽的透明倒计时窗口，具有彩虹色效果和交互功能
  */
 public class Main extends Application {
-    // 时间显示标签
-    private Label timeLabel;
+    // 倒计时标签
+    private Label countdownLabel;
     // 剩余秒数
     private int remainingSeconds;
-    // 主倒计时时间线
-    private Timeline timeline;
+    // 专注期倒计时时间线
+    private Timeline countdownTimeline;
+    // 放松期正计时时间线
+    private Timeline countupTimeline;
+    // 已过秒数
+    private long elapsedSeconds = 0;
+    // 正计时标签
+    private Label countupLabel;
     // 颜色过渡时间线
     private Timeline colorTransitionTimeline;
     // 根布局容器
     private StackPane root;
-    // 是否已准备开始倒计时
-    private boolean isReady = true;
     // 总倒计时秒数
     private int totalSeconds = 30 * 60;
     // 倒计时是否正在运行
-    private boolean isRunning = false;
+    private boolean isCountdownRunning = false;
     // 拖拽距离
     private double dragDistance = 0;
     // 拖拽阈值（像素）
     private final double DRAG_THRESHOLD = 5;
-    // 用于存储笑脸效果元素的列表
-    private List<javafx.scene.Node> smileyElements = new ArrayList<>();
+    // 用于存储彩虹渐变效果元素的列表
+    private List<javafx.scene.Node> rainbowEffectHolders = new ArrayList<>();
 
     /**
      * 应用程序启动方法
@@ -60,13 +64,22 @@ public class Main extends Application {
         // 在 start 方法中正确设置窗口图标
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/imag/kouTu.png")));
 
-
         // 2. 创建用于显示倒计时的标签
-        timeLabel = new Label("30:00");
-        timeLabel.setStyle("-fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: white;");
+        countdownLabel = new Label("30:00");
+        countdownLabel.setStyle("-fx-font-size: 23px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        countupLabel = new Label("00:00:00");
+        countupLabel.setStyle(
+            "-fx-font-size: 16px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-text-fill: white;"
+        );
+
+        // 初始不显示正计时
+        countupLabel.setVisible(false);
 
         // 创建根布局容器并添加时间标签
-        root = new StackPane(timeLabel);
+        root = new StackPane(countdownLabel);
         // 设置圆角和边框样式
         root.setStyle(
             "-fx-background-color: rgba(255, 0, 0, 0.6);" +  // 红色半透明背景
@@ -101,16 +114,16 @@ public class Main extends Application {
         root.setOnMouseClicked(e -> {
             // 只有当拖拽距离小于阈值时才认为是点击事件
             if (dragDistance < DRAG_THRESHOLD && e.getButton() == MouseButton.PRIMARY) {
-                if (!isRunning) {
+                if (countupLabel.isVisible()) {
+                    // 正计时正在显示，点击重置倒计时
+                    clearRainbow();             // 停止彩虹渐变
+                    if (countupTimeline != null) countupTimeline.stop(); // 停止正计时
+                    countupLabel.setVisible(false);
+                    countdownLabel.setVisible(true);
+                    resetCountdown();           // 重置倒计时
+                } else if (!isCountdownRunning) {
                     // 当倒计时未运行时的点击处理
-                    if (!isReady) {
-                        // 第一次点击准备倒计时，重置显示
-                        resetCountdown();
-                        isReady = true;
-                    } else {
-                        // 第二次点击开始倒计时
-                        startCountdown();
-                    }
+                    startCountdown();
                 }
                 // 当倒计时运行中时点击不执行任何特效
             }
@@ -138,12 +151,12 @@ public class Main extends Application {
         });
 
         // 4. 初始位置：屏幕右上角
-        primaryStage.setX(1190);
-        primaryStage.setY(42);
+        primaryStage.setX(1170);
+        primaryStage.setY(47);
         primaryStage.show();
 
         // 初始显示
-        updateTimeLabel();
+        updateCountdownTimeLabel();
 
         // 定时每 1 分钟重新置顶
         Timeline alwaysOnTopTimeline = new Timeline(
@@ -160,44 +173,87 @@ public class Main extends Application {
      * 重置倒计时
      */
     private void resetCountdown() {
-        clearSmiley(); // 清除笑脸效果
         remainingSeconds = totalSeconds;
-        isRunning = false;
-        if (timeline != null) {
-            timeline.stop();
+        isCountdownRunning = false;
+        if (countdownTimeline != null) {
+            countdownTimeline.stop();
         }
-        updateTimeLabel();
+        updateCountdownTimeLabel();
     }
 
     /**
      * 开始倒计时
      */
     private void startCountdown() {
-        isRunning = true;
-        isReady = false; // 重置准备状态
-        timeline = new Timeline(
+        isCountdownRunning = true;
+        countdownTimeline = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
                     remainingSeconds--;
-                    updateTimeLabel();
+                    updateCountdownTimeLabel();
                     if (remainingSeconds <= 0) {
-                        timeline.stop();
-                        isRunning = false;
-                        isReady = false; // 倒计时结束状态
-                        // 倒计时结束时显示笑脸效果
-                        showSmileyFace();
+                        countdownTimeline.stop();
+                        countdownLabel.setVisible(false);
+                        countupLabel.setVisible(true);
+                        isCountdownRunning = false;
+                        // 倒计时结束时显示彩虹渐变效果
+                        startCountUp();
+                        showRainbow();
                     }
                 })
         );
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.play();
+        countdownTimeline.setCycleCount(Animation.INDEFINITE);
+        countdownTimeline.play();
+    }
+
+    /**
+     * 开始正计时
+     */
+    private void startCountUp() {
+        // 重置正计时，从0开始
+        elapsedSeconds = 0;
+
+        // 先刷新一次，防止上一次残留
+        updateCountupTimeLabel();
+
+        if (countupTimeline != null) {
+            countupTimeline.stop();
+        }
+
+        countupTimeline = new Timeline(
+                new KeyFrame(Duration.seconds(1), e -> {
+                    elapsedSeconds++;
+                    updateCountupTimeLabel();
+                })
+        );
+        countupTimeline.setCycleCount(Animation.INDEFINITE);
+        countupTimeline.play();
+    }
+
+    /**
+     * 更新正计时标签的显示内容
+     */
+    private void updateCountupTimeLabel() {
+        long hours = elapsedSeconds / 3600;
+        long minutes = (elapsedSeconds % 3600) / 60;
+        long seconds = elapsedSeconds % 60;
+
+        countupLabel.setText(
+                String.format("%02d:%02d:%02d", hours, minutes, seconds)
+        );
     }
 
     /**
      * 显示平滑彩虹色渐变效果
      */
-    private void showSmileyFace() {
+    private void showRainbow() {
         // 移除时间标签以显示纯色背景效果
-        root.getChildren().remove(timeLabel);
+        root.getChildren().remove(countdownLabel);
+
+        // 添加正计时标签
+        if (!root.getChildren().contains(countupLabel)) {
+            root.getChildren().add(countupLabel);
+        }
+        countupLabel.setVisible(true);
 
         // 定义彩虹颜色数组
         Color[] rainbowColors = {
@@ -245,31 +301,31 @@ public class Main extends Application {
         // 使用简单的标记对象保存过渡动画引用以便清理
         javafx.scene.shape.Rectangle marker = new javafx.scene.shape.Rectangle(0, 0);
         marker.setUserData(rainbowTransition); // 将过渡动画存储在userData中
-        smileyElements.add(marker);
+        rainbowEffectHolders.add(marker);
     }
 
     /**
      * 清理彩虹效果
      */
-    private void clearSmiley() {
+    private void clearRainbow() {
         // 停止所有颜色过渡动画
-        for (javafx.scene.Node node : smileyElements) {
+        for (javafx.scene.Node node : rainbowEffectHolders) {
             if (node.getUserData() instanceof Transition) {
                 Transition transition = (Transition) node.getUserData();
                 transition.stop();
             } else if (node.getUserData() instanceof Timeline) {
-                Timeline timeline = (Timeline) node.getUserData();
-                timeline.stop();
+                Timeline countdownTimeline = (Timeline) node.getUserData();
+                countdownTimeline.stop();
             }
         }
 
         // 清理元素
-        root.getChildren().removeAll(smileyElements);
-        smileyElements.clear();
+        rainbowEffectHolders.clear();
 
-        // 重新添加时间标签
-        if (!root.getChildren().contains(timeLabel)) {
-            root.getChildren().add(timeLabel);
+        // 隐藏正计时，显示倒计时
+        countupLabel.setVisible(false);
+        if (!root.getChildren().contains(countdownLabel)) {
+            root.getChildren().add(countdownLabel);
         }
 
         // 恢复原始背景色
@@ -285,10 +341,10 @@ public class Main extends Application {
     /**
      * 格式化时间为 HH:MM
      */
-    private void updateTimeLabel() {
+    private void updateCountdownTimeLabel() {
         int mins = remainingSeconds / 60;
         int secs = remainingSeconds % 60;
-        timeLabel.setText(String.format("%02d:%02d", mins, secs));
+        countdownLabel.setText(String.format("%02d:%02d", mins, secs));
     }
 
     /**
@@ -356,8 +412,6 @@ public class Main extends Application {
 
         transition.play();
     }
-
-
 
     @Override
     public void init() throws Exception {
