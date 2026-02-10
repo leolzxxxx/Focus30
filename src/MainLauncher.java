@@ -20,7 +20,7 @@ public class MainLauncher {
     private static FileLock lock;
 
     /**
-     * 设置应用程序用户模型ID
+     * 设置应用程序用户模型ID，设置应用的任务栏标识
      * @param appID 应用程序用户模型ID
      */
     public static void setAppUserModelID(String appID) {
@@ -58,7 +58,7 @@ public class MainLauncher {
      */
     public static void main(String[] args) {
         if (!lockInstance()) {
-            System.out.println("程序已启动");
+            System.out.println("程序已启动，请关闭后重试！");
             return;
         }
 

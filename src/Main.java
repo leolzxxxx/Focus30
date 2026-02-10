@@ -1,16 +1,16 @@
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.Shell32;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.animation.Transition;
+import javafx.animation.*;
 import javafx.application.Application;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -40,7 +40,8 @@ public class Main extends Application {
     // 根布局容器
     private StackPane root;
     // 总倒计时秒数
-    private int totalSeconds = 30 * 60;
+//    private int totalSeconds = 30 * 60;
+    private int totalSeconds = 3; // todo
     // 倒计时是否正在运行
     private boolean isCountdownRunning = false;
     // 拖拽距离
@@ -49,6 +50,14 @@ public class Main extends Application {
     private final double DRAG_THRESHOLD = 5;
     // 用于存储彩虹渐变效果元素的列表
     private List<javafx.scene.Node> rainbowEffectHolders = new ArrayList<>();
+    // 震动动画
+    private TranslateTransition shakeTransition;
+    // 未点击定时器，用于5秒内未点击则弹窗提示
+    private PauseTransition noClickTimer;
+    // 是否在提醒阶段发生过点击
+    private boolean clickedDuringAlert = false;
+    // 10 秒不可操作弹窗
+    private Stage forceDialog;
 
     /**
      * 应用程序启动方法
@@ -115,14 +124,17 @@ public class Main extends Application {
             // 只有当拖拽距离小于阈值时才认为是点击事件
             if (dragDistance < DRAG_THRESHOLD && e.getButton() == MouseButton.PRIMARY) {
                 if (countupLabel.isVisible()) {
-                    // 正计时正在显示，点击重置倒计时
+                    // 如果正在显示正计时，则停止以下操作，即第一次点击
+                    clickedDuringAlert = true;                 // 标记已点击
+                    if (noClickTimer != null) noClickTimer.stop(); // 取消 5 秒检测
                     clearRainbow();             // 停止彩虹渐变
                     if (countupTimeline != null) countupTimeline.stop(); // 停止正计时
+                    stopShake();       // 停止震动
                     countupLabel.setVisible(false);
                     countdownLabel.setVisible(true);
                     resetCountdown();           // 重置倒计时
                 } else if (!isCountdownRunning) {
-                    // 当倒计时未运行时的点击处理
+                    // 当倒计时未运行时的点击处理，即第二次点击，则开始倒计时，是一切的开始
                     startCountdown();
                 }
                 // 当倒计时运行中时点击不执行任何特效
@@ -190,14 +202,17 @@ public class Main extends Application {
                 new KeyFrame(Duration.seconds(1), event -> {
                     remainingSeconds--;
                     updateCountdownTimeLabel();
+                    // 倒计时结束
                     if (remainingSeconds <= 0) {
                         countdownTimeline.stop();
                         countdownLabel.setVisible(false);
                         countupLabel.setVisible(true);
                         isCountdownRunning = false;
-                        // 倒计时结束时显示彩虹渐变效果
+                        //展示效果
                         startCountUp();
                         showRainbow();
+                        startShake();
+                        startNoClickDetect(); // 开始 5 秒无点击检测
                     }
                 })
         );
@@ -337,6 +352,111 @@ public class Main extends Application {
             "-fx-border-radius: 10;"
         );
     }
+
+    /**
+     * 上下震动效果
+     */
+    private void startShake() {
+        if (shakeTransition != null) {
+            shakeTransition.stop();
+        }
+
+        shakeTransition = new TranslateTransition(Duration.millis(150), root); // 动画持续时间x毫秒
+        shakeTransition.setFromY(+5);
+        shakeTransition.setToY(-5);
+        shakeTransition.setAutoReverse(true);
+        shakeTransition.setCycleCount(Animation.INDEFINITE);
+        shakeTransition.play();
+    }
+
+    /**
+     * 停止上下震动效果
+     */
+    private void stopShake() {
+        if (shakeTransition != null) {
+            shakeTransition.stop();
+            shakeTransition = null;
+            root.setTranslateY(0); // 复位
+        }
+    }
+
+    /**
+     * 开始检测5秒内是否无点击
+     */
+    private void startNoClickDetect() {
+        // 每次进入提醒态都重置
+        clickedDuringAlert = false;
+
+        // 停止上一次定时器
+        if (noClickTimer != null) {
+            noClickTimer.stop();
+        }
+
+        // 5 秒未点击则创建未点击定时器
+        noClickTimer = new PauseTransition(Duration.seconds(5));
+        noClickTimer.setOnFinished(e -> {
+            // 5 秒内没有点击 → 弹窗
+            if (!clickedDuringAlert && countupLabel.isVisible()) {
+                showForceDialog();
+            }
+        });
+        noClickTimer.play();
+    }
+
+    /**
+     * 显示强制休息弹窗
+     */
+    private void showForceDialog() {
+        if (forceDialog != null && forceDialog.isShowing()) {
+            return;
+        }
+
+        // 提示文字
+        Label msg = new Label("强制暂停 30 秒钟，去休息一下吧~");
+        msg.setStyle("-fx-font-size: 36px;" + "-fx-font-weight: bold;" + "-fx-text-fill: white;");
+
+        // 根容器：大面积半透明圆角
+        StackPane pane = new StackPane(msg);
+        pane.setStyle(
+                "-fx-background-color: rgba(236,206,206,0.9);" + // 背景及透明度
+                "-fx-background-radius: 10;" +               // 圆角
+                "-fx-border-color: rgba(255,0,0,0.9);" + // 边框
+                "-fx-border-width: 1;" +
+                "-fx-border-radius: 20;"
+        );
+        pane.setPrefSize(900, 300); // 大面积，可以根据屏幕调节
+
+        // 创建弹窗
+        forceDialog = new Stage();
+        forceDialog.initOwner(root.getScene().getWindow()); // 设置弹窗的所有者为当前主窗口
+        forceDialog.initModality(Modality.APPLICATION_MODAL); // 禁止操作主窗口
+        forceDialog.initStyle(StageStyle.TRANSPARENT);         // 透明无边框
+        forceDialog.setResizable(false);                       // 不可改变大小
+        Scene scene = new Scene(pane);
+        scene.setFill(Color.TRANSPARENT);                     // 场景透明
+        forceDialog.setScene(scene);
+
+        // 禁止用户关闭
+        forceDialog.setOnCloseRequest(e -> e.consume());
+
+        // 获取屏幕可视区域，弹窗在屏幕中间
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+        double centerX = screenBounds.getMinX() + (screenBounds.getWidth() - pane.getPrefWidth()) / 2;
+        double centerY = screenBounds.getMinY() + (screenBounds.getHeight() - pane.getPrefHeight()) / 2;
+        forceDialog.setX(centerX);
+        forceDialog.setY(centerY);
+
+        forceDialog.show();
+
+        // x秒后自动消失
+        PauseTransition autoClose = new PauseTransition(Duration.seconds(30));  //todo 30
+        autoClose.setOnFinished(e -> {
+            forceDialog.close();
+            forceDialog = null;
+        });
+        autoClose.play();
+    }
+
 
     /**
      * 格式化时间为 HH:MM
