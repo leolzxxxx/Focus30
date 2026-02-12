@@ -1,4 +1,4 @@
-package main.java.utils;
+package main.java.com.focus30.utils;
 
 /**
  * @className: Config

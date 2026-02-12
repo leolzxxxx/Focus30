@@ -1,3 +1,15 @@
+# 运行项目
+1. 下载安装 **[Launch4j](https://pan.quark.cn/s/4d11acae2c5f#/list/share)** 。
+2. 在配置中加载项目根目录下的 `Focus30.xml` 文件。
+3. 点击 **Build Wrapper** 按钮生成 `Focus30.exe` 可执行文件。
+4. 生成完成后，双击运行 `Focus30.exe` 将显示一个悬浮的 **Focus30**。
+5. 如需开机自启动，`Win+R` 后输入 `shell:startup`，把 `Focus30.exe` 复制快捷方式放入该目录下即可。
+
+
+
+
+
+
 # 用于后续在Gitlab中发布exe文件的操作
 
 # 创建Release示例

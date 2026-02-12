@@ -18,7 +18,7 @@ import java.util.function.Consumer;
  */
 public class TimerController {
     // 总倒计时秒数
-    private int totalSeconds = 3; //todo
+    private int totalSeconds = 30 * 60; //todo
     // 剩余秒数
     private int remainingSeconds;
     // 已过秒数
