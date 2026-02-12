@@ -6,6 +6,7 @@ import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import main.java.com.focus30.utils.Config;
 
 import java.util.function.Consumer;
 
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
  */
 public class TimerController {
     // 总倒计时秒数
-    private int totalSeconds = 30 * 60; //todo
+    private int totalSeconds = Config.getInt("totalSeconds");
     // 剩余秒数
     private int remainingSeconds;
     // 已过秒数

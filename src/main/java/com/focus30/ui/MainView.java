@@ -15,6 +15,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import main.java.com.focus30.core.TimerController;
 import main.java.com.focus30.effect.AnimationManager;
+import main.java.com.focus30.utils.Config;
 
 /**
  * @className: MainView
@@ -29,12 +30,7 @@ public class MainView extends Application {
     // 拖拽距离
     private double dragDistance = 0;
     // 拖拽阈值（像素）
-    private final double DRAG_THRESHOLD = 5;
-    // 未点击定时器，用于5秒内未点击则弹窗提示
-    private PauseTransition noClickTimer;
-    // 是否在提醒阶段发生过点击
-    private boolean clickedDuringAlert = false;
-    private Timeline colorTransitionTimeline;
+    private final double DRAG_THRESHOLD = Config.getDouble("drag.threshold");
 
     private TimerController timerController;
     private AnimationManager animationManager;
@@ -51,7 +47,7 @@ public class MainView extends Application {
         // 1. 创建浮动窗口，无边框且置顶
         primaryStage.initStyle(StageStyle.TRANSPARENT); // 设置为透明
         primaryStage.setAlwaysOnTop(true); // 设置置顶
-        primaryStage.setOpacity(0.8); // 设置透明度（0.0~1.0，0.7表示半透明）
+        primaryStage.setOpacity(Config.getInt("primaryStage.opacity"));
 
         // 在 start 方法中正确设置窗口图标
         primaryStage.getIcons().add(new Image(MainView.class.getResourceAsStream("/src/main/resources/imag/kouTu.png")));
@@ -88,29 +84,33 @@ public class MainView extends Application {
         root = new StackPane(countdownLabel);
         // 设置圆角和边框样式
         root.setStyle(
-                "-fx-background-color: rgba(255, 0, 0, 0.6);" +  // 红色半透明背景
+                "-fx-background-color: rgba(255, 0, 0, 0.6);" +  // 半透明背景
                         "-fx-background-radius: 10;" +  // 圆角半径
-                        "-fx-border-color: rgba(255,0,0,0.95);" +     // 边框颜色
+                        "-fx-border-color: rgba(255, 0, 0, 0.95);" +     // 边框颜色
                         "-fx-border-width: 1;" +         // 边框宽度
                         "-fx-border-radius: 10;"         // 边框圆角
         );
 
-        // 创建颜色过渡时间线
-        colorTransitionTimeline = new Timeline();
-        colorTransitionTimeline.setCycleCount(1); // 只执行一次
-
         // 设置鼠标进入时的颜色过渡效果
         root.setOnMouseEntered(e -> {
-            colorTransitionTimeline.stop(); // 停止当前正在进行的动画
-            // 创建从红色到粉色的颜色过渡
-            animationManager.createColorTransition(root, 255, 0, 0, 255, 105, 180, 0.6, 0.7, 300); // 300ms过渡时间
+            animationManager.playColorTransition(
+                    root,
+                    255, 0, 0,
+                    255, 105, 180,
+                    0.6, 0.6,
+                    400
+            );
         });
 
         // 设置鼠标退出时的颜色过渡效果
         root.setOnMouseExited(e -> {
-            colorTransitionTimeline.stop(); // 停止当前正在进行的动画
-            // 创建从粉色到红色的颜色过渡
-            animationManager.createColorTransition(root, 255, 105, 180, 255, 0, 0, 0.7, 0.6, 300); // 300ms过渡时间
+            animationManager.playColorTransition(
+                    root,
+                    255, 105, 180,
+                    255, 0, 0,
+                    0.6, 0.6,
+                    400
+            );
         });
 
         // 修改鼠标点击事件处理
@@ -142,8 +142,7 @@ public class MainView extends Application {
         });
 
         // 创建场景并设置透明背景
-        Scene scene = new Scene(root, 70, 26);
-        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        Scene scene = new Scene(root, Config.getInt("primaryStage.width"), Config.getInt("primaryStage.height"));
         scene.getStylesheets().clear(); // 清除默认样式
         scene.setFill(javafx.scene.paint.Color.TRANSPARENT); // 设置场景背景透明
         primaryStage.setScene(scene);
@@ -163,23 +162,24 @@ public class MainView extends Application {
         });
 
         // 4. 初始位置：屏幕右上角
-        primaryStage.setX(1170);
-        primaryStage.setY(47);
+        primaryStage.setX(Config.getInt("primaryStage.x"));
+        primaryStage.setY(Config.getInt("primaryStage.y"));
         primaryStage.show();
 
-        // 定时每 1 分钟重新置顶
+        alwaysOnTop(primaryStage);
+    }
+
+    /**
+     * 定时重新窗口置顶
+     */
+    private void alwaysOnTop(Stage primaryStage) {
         Timeline alwaysOnTopTimeline = new Timeline(
-                new KeyFrame(Duration.minutes(1), e -> {
+                new KeyFrame(Duration.minutes(Config.getInt("alwaysOnTop.refreshMinutes")), e -> {
                     primaryStage.setAlwaysOnTop(false);  // 先取消
                     primaryStage.setAlwaysOnTop(true);   // 再恢复，达到重新置顶效果
                 })
         );
         alwaysOnTopTimeline.setCycleCount(Animation.INDEFINITE);
         alwaysOnTopTimeline.play();
-    }
-
-    @Override
-    public void init() throws Exception {
-        super.init();
     }
 }

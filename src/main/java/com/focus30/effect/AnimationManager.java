@@ -18,12 +18,12 @@ import java.util.List;
  * @version: 1.0
  */
 public class AnimationManager {
-    // 颜色过渡时间线
-    private Timeline colorTransitionTimeline = new Timeline();
     // 用于存储彩虹渐变效果元素的列表
     private List<Node> rainbowEffectHolders = new ArrayList<>();
     // 震动动画
     private TranslateTransition shakeTransition;
+    // 颜色过渡动画
+    private Transition colorTransition;
 
     /**
      * 显示平滑彩虹色渐变效果
@@ -134,68 +134,47 @@ public class AnimationManager {
     }
 
     /**
-     * 创建颜色过渡动画
-     * @param pane 要应用过渡的面板
-     * @param fromR 起始红色值
-     * @param fromG 起始绿色值
-     * @param fromB 起始蓝色值
-     * @param toR 目标红色值
-     * @param toG 目标绿色值
-     * @param toB 目标蓝色值
-     * @param fromOpacity 起始透明度
-     * @param toOpacity 目标透明度
-     * @param durationMs 过渡持续时间（毫秒）
+     * 实现鼠标进出时的颜色过渡效果
      */
-    public void createColorTransition(StackPane pane,
-                                       int fromR, int fromG, int fromB,
-                                       int toR, int toG, int toB,
-                                       double fromOpacity, double toOpacity,
-                                       int durationMs) {
-        colorTransitionTimeline.getKeyFrames().clear();
+    public void playColorTransition(
+            StackPane pane,
+            int fromR, int fromG, int fromB,
+            int toR, int toG, int toB,
+            double fromOpacity, double toOpacity,
+            int durationMs
+    ) {
+        stopColorTransition();
 
-        // 创建关键帧
-        KeyFrame keyFrame = new KeyFrame(Duration.millis(durationMs), event -> {
-            // 动画结束时确保颜色为目标颜色
-            int r = toR;
-            int g = toG;
-            int b = toB;
-            double opacity = toOpacity;
-            // 应用圆角和边框样式
-            pane.setStyle(
-                    String.format("-fx-background-color: rgba(%d, %d, %d, %.1f);", r, g, b, opacity) +
-                            "-fx-background-radius: 10;" +
-                            "-fx-border-color: rgba(255,0,0,0.95);" +
-                            "-fx-border-width: 1;" +
-                            "-fx-border-radius: 10;"
-            );
-        });
-
-        colorTransitionTimeline.getKeyFrames().add(keyFrame);
-
-        // 使用Transition实现平滑颜色过渡效果
-        Transition transition = new Transition() {
+        colorTransition = new Transition() {
             {
                 setCycleDuration(Duration.millis(durationMs));
             }
 
             @Override
             protected void interpolate(double frac) {
-                // 根据进度计算当前颜色值
                 int r = (int) (fromR + frac * (toR - fromR));
                 int g = (int) (fromG + frac * (toG - fromG));
                 int b = (int) (fromB + frac * (toB - fromB));
                 double opacity = fromOpacity + frac * (toOpacity - fromOpacity);
-                // 应用圆角和边框样式
-                pane.setStyle(
-                        String.format("-fx-background-color: rgba(%d, %d, %d, %.1f);", r, g, b, opacity) +
+
+                pane.setStyle(String.format(
+                        "-fx-background-color: rgba(%d,%d,%d,%.2f);" +
                                 "-fx-background-radius: 10;" +
                                 "-fx-border-color: rgba(255,0,0,0.95);" +
                                 "-fx-border-width: 1;" +
-                                "-fx-border-radius: 10;"
-                );
+                                "-fx-border-radius: 10;",
+                        r, g, b, opacity
+                ));
             }
         };
 
-        transition.play();
+        colorTransition.play();
+    }
+
+    public void stopColorTransition() {
+        if (colorTransition != null) {
+            colorTransition.stop();
+            colorTransition = null;
+        }
     }
 }

@@ -11,6 +11,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
+import main.java.com.focus30.utils.Config;
 
 /**
  * @className: ForceDialog
@@ -31,7 +32,7 @@ public class ForceDialog {
         }
 
         // 提示文字
-        Label msg = new Label("强制暂停 10 秒钟，去休息一下吧~");
+        Label msg = new Label("强制暂停 " + Config.getInt("showSeconds") + " 秒钟，去休息一下吧~");
         msg.setStyle("-fx-font-size: 36px;" + "-fx-font-weight: bold;" + "-fx-text-fill: white;");
 
         // 根容器：大面积半透明圆角
@@ -43,7 +44,7 @@ public class ForceDialog {
                         "-fx-border-width: 1;" +
                         "-fx-border-radius: 20;"
         );
-        pane.setPrefSize(900, 300); // 大面积，可以根据屏幕调节
+        pane.setPrefSize(Config.getInt("show.width"), Config.getInt("show.height")); // 弹窗尺寸
 
         // 创建弹窗
         forceDialog = new Stage();
@@ -68,7 +69,7 @@ public class ForceDialog {
         forceDialog.show();
 
         // x秒后自动消失
-        PauseTransition autoClose = new PauseTransition(Duration.seconds(10));  //todo 30
+        PauseTransition autoClose = new PauseTransition(Duration.seconds(Config.getInt("showSeconds")));
         autoClose.setOnFinished(e -> {
             forceDialog.close();
             forceDialog = null;
