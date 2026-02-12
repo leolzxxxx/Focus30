@@ -3,7 +3,7 @@
 Focus30 是一个使用 **JavaFX** 编写的专注倒计时应用。  
 本项目通过 Launch4j 打包为 Windows 可执行文件，支持一键运行。
 
-![Focus30界面预览](imag/demo.png)
+![Focus30界面预览](src/main/resources/imag/demo.png)
 
 ## ✨ 功能亮点
 ⏱️ 半透明悬浮倒计时窗口\

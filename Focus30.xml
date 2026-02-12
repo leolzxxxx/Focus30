@@ -5,7 +5,7 @@
   <jar>E:\Focus30\out\artifacts\Focus30_jar\Focus30.jar</jar>
   <outfile>E:\Focus30\out\Focus30.exe</outfile>
   <classPath>
-    <mainClass>MainLauncher</mainClass>
+    <mainClass>main.java.com.focus30.launcher.MainLauncher</mainClass>
   </classPath>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
