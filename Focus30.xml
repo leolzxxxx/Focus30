@@ -4,9 +4,6 @@
   <headerType>gui</headerType>
   <jar>E:\Focus30\out\artifacts\Focus30_jar\Focus30.jar</jar>
   <outfile>E:\Focus30\out\Focus30.exe</outfile>
-  <classPath>
-    <mainClass>main.java.com.focus30.launcher.MainLauncher</mainClass>
-  </classPath>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -16,7 +13,10 @@
   <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>E:\Focus30\imag\kouTu.ico</icon>
+  <icon>E:\Focus30\src\main\resources\imag\kouTu.ico</icon>
+  <classPath>
+    <mainClass>main.java.com.focus30.launcher.MainLauncher</mainClass>
+  </classPath>
   <jre>
     <path>D:\jdk-21</path>
     <requiresJdk>true</requiresJdk>

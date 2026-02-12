@@ -47,7 +47,7 @@ public class MainView extends Application {
         // 1. 创建浮动窗口，无边框且置顶
         primaryStage.initStyle(StageStyle.TRANSPARENT); // 设置为透明
         primaryStage.setAlwaysOnTop(true); // 设置置顶
-        primaryStage.setOpacity(Config.getInt("primaryStage.opacity"));
+        primaryStage.setOpacity(Config.getDouble("primaryStage.opacity"));
 
         // 在 start 方法中正确设置窗口图标
         primaryStage.getIcons().add(new Image(MainView.class.getResourceAsStream("/src/main/resources/imag/kouTu.png")));
