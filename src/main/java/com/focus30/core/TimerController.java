@@ -135,7 +135,7 @@ public class TimerController {
         }
 
         noClickTimeline = new Timeline(
-                new KeyFrame(Duration.seconds(5), e -> {
+                new KeyFrame(Duration.seconds(Config.getInt("countupSeconds")), e -> {
                     // 如果处于relaxPhase，则执行
                     if (relaxPhase) {
                         onNoClickTimeout.run();
