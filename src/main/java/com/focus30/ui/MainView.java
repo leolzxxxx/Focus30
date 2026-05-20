@@ -174,7 +174,7 @@ public class MainView extends Application {
      */
     private void alwaysOnTop(Stage primaryStage) {
         Timeline alwaysOnTopTimeline = new Timeline(
-                new KeyFrame(Duration.minutes(Config.getInt("alwaysOnTop.refreshMinutes")), e -> {
+                new KeyFrame(Duration.minutes(Config.getInt("primaryStage.alwaysOnTop")), e -> {
                     primaryStage.setAlwaysOnTop(false);  // 先取消
                     primaryStage.setAlwaysOnTop(true);   // 再恢复，达到重新置顶效果
                 })

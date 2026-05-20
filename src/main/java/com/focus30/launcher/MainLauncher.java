@@ -61,7 +61,8 @@ public class MainLauncher {
      */
     public static void main(String[] args) {
         if (!lockInstance()) {
-            System.out.println("程序已启动，请关闭后重试！");
+//            System.out.println("程序已启动，请关闭后重试！");
+            System.out.println("\u7a0b\u5e8f\u5df2\u542f\u52a8\uff0c\u8bf7\u5173\u95ed\u540e\u91cd\u8bd5\uff01"); // 解决乱码问题
             return;
         }
 
